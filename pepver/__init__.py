@@ -91,9 +91,9 @@ class Version:
         if self.epoch is not None:
             result.append(self.epoch)
             result.append("!")
-        result.extend(self.release)
+        result.extend(".".join(str(part) for part in self.release))
         if self.pre is not None:
-            result.append(",".join(str(part) for part in self.pre))
+            result.extend(self.pre)
         if self.post is not None:
             result.append(".post")
             result.append(self.post)
