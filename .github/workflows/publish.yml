@@ -27,7 +27,10 @@ jobs:
     - name: Install dependencies
       run: poetry install
 
-    - name: Build and publish to pypi
-      uses: JRubics/poetry-publish@v1.13
-      with:
-        pypi_token: ${{ secrets.PYPI_TOKEN }}
+    - name: Build package
+      run: poetry build
+
+    - name: Publish package to PYPI
+      env:
+        PYPI_TOKEN: ${{ secrets.PYPI_TOKEN }}
+      run: poetry publish --username --password $PYPI_TOKEN
