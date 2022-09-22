@@ -9,9 +9,9 @@ import re
 from copy import deepcopy
 from enum import Enum
 from itertools import zip_longest
-from typing import Any, ClassVar, List, Literal, Optional, Tuple, Union
+from typing import Any, ClassVar, Final, List, Literal, Optional, Tuple, Union
 
-VERSION_SUBPATTERNS = {
+VERSION_SUBPATTERNS: Final = {
     "epoch": r"([0-9]+!)?",
     "release": r"[0-9]+(\.[0-9]+)*",
     "pre": r"([-_\.]?(a|b|rc|alpha|beta|c|pre|preview)[-_\.]?[0-9]*)?",
@@ -20,8 +20,8 @@ VERSION_SUBPATTERNS = {
     "local": r"(\+[a-z0-9]+([-_\.][a-z0-9]+)*)?",
 }
 
-VERSION_PATTERN = r"\s*v?" + r"".join(VERSION_SUBPATTERNS.values()) + r"\s*"
-VERSION_PATTERN_WITH_GROUPS = (
+VERSION_PATTERN: Final = r"\s*v?" + r"".join(VERSION_SUBPATTERNS.values()) + r"\s*"
+VERSION_PATTERN_WITH_GROUPS: Final = (
     r"\s*v?"
     + r"".join(rf"(?P<{group}>{pattern})" for group, pattern in VERSION_SUBPATTERNS.items())
     + r"\s*"
@@ -29,7 +29,7 @@ VERSION_PATTERN_WITH_GROUPS = (
 
 ReleasePart = Literal["major", "minor", "micro"]
 Pre = Tuple[Literal["a", "b", "rc"], int]
-RELEASE_ORDER: List[ReleasePart] = ["major", "minor", "micro"]
+RELEASE_ORDER: Final[List[ReleasePart]] = ["major", "minor", "micro"]
 
 
 class VersionPart(Enum):
