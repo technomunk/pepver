@@ -2,6 +2,7 @@
 
 [![Python versions](https://img.shields.io/pypi/pyversions/pepver.svg)](https://pypi.org/project/pepver)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Unit tests](https://github.com/technomunk/pepver/actions/workflows/test.yml/badge.svg)](https://github.com/technomunk/pepver/actions/workflows/test.yml)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
 PEP-440 version parsing, interpretation and manipulation.
