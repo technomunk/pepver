@@ -133,12 +133,12 @@ class Version:
         for field in VersionPart:
             if field == part:
                 if field == VersionPart.PRE:
-                    prefix, value = getattr(version, field.value, ("a", 0))
+                    prefix, value = getattr(version, field.value) or ("a", 0)
                     value = prefix, value + change
                 elif field == VersionPart.RELEASE:
                     value = *version.release[:-1], version.release[-1] + change
                 else:
-                    value = getattr(version, field.value, 0) + change
+                    value = (getattr(version, field.value) or 0) + change
                 setattr(version, field.value, value)
                 clear = True
                 continue
@@ -165,7 +165,7 @@ class Version:
         if isinstance(idx, str):
             idx = RELEASE_ORDER.index(idx)
 
-        if len(self.release) < idx:
+        if len(self.release) <= idx:
             release = (
                 *tuple(part for part, _ in zip_longest(self.release, range(idx), fillvalue=0)),
                 change,
@@ -210,7 +210,7 @@ class Version:
             self.release = self.release[:2]
             return
         if len(self.release) < 2:
-            raise RuntimeError("Setting micro version requires minor version to be present")
+            self.release = self.release[0], 0, value
         self.release = *self.release[:2], value, *self.release[3:]
 
     def different_at(self, other: "Version") -> Optional[VersionPart]:

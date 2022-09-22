@@ -123,7 +123,7 @@ def test_version_order() -> None:
 
 
 @pytest.mark.parametrize(
-    "initial args expected",
+    ["initial", "args", "expected"],
     [
         [Version(0), ["major"], Version(1)],
         [Version(0), ["minor"], Version((0, 1))],
@@ -149,7 +149,7 @@ def test_update(initial: Version, args: Tuple[str, int], expected: Version) -> N
 
 
 @pytest.mark.parametrize(
-    "initial args expected",
+    ["initial", "args", "expected"],
     [
         [Version(0), ["major"], Version(1)],
         [Version(0), [0], Version(1)],
@@ -157,8 +157,8 @@ def test_update(initial: Version, args: Tuple[str, int], expected: Version) -> N
         [Version(0), [1], Version((0, 1))],
         [Version(0), ["micro"], Version((0, 0, 1))],
         [Version(0), [2], Version((0, 0, 1))],
-        [Version((0, 1, 2)), [-1], Version((0, 1, 2, 3))],
-        [Version((0, 1, 2, 3)), [-1], Version((0, 1, 2, 5))],
+        [Version((0, 1, 2)), [-1], Version((0, 1, 3))],
+        [Version((0, 1, 2, 3)), [-1], Version((0, 1, 2, 4))],
         [Version((0, 1, 2, 3, 4)), [3, 11], Version((0, 1, 2, 14))],
         [Version((0, 1, 2, 3, 4)), [1], Version((0, 2))],
     ],
@@ -178,7 +178,7 @@ def test_final() -> None:
 
 
 @pytest.mark.parametrize(
-    "left right part",
+    ["left", "right", "part"],
     [
         [Version(0), Version(1), "major"],
         [Version(epoch=1, release=0), Version(1), "epoch"],
@@ -195,9 +195,7 @@ def test_final() -> None:
         [Version(0, ("a", 0), 1), Version(0, ("a", 0)), "post"],
         [Version(0, ("a", 0), 1, 1), Version(0, ("a", 0)), "post"],
         [Version(0, ("a", 0), 0, 0), Version(0, ("a", 0), 0), "dev"],
-        [Version(0, ("a", 0), 0, 0, local="1"), Version(0, ("a", 0), 0), "local"],
-        [Version(0, ("a", 0), 0, 0, local="1"), Version(0, ("a", 0), 0, 0, local="1"), None],
-    ]
+    ],
 )
 def test_different_at(left: Version, right: Version, part: VersionPart) -> None:
     if part is not None and not isinstance(part, VersionPart):
