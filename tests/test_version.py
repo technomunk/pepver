@@ -122,7 +122,7 @@ def test_version_order() -> None:
         assert before > after
 
 
-@pytest.mark.parameterize(
+@pytest.mark.parametrize(
     "initial args expected",
     [
         [Version(0), ["major"], Version(1)],
@@ -148,7 +148,7 @@ def test_update(initial: Version, args: Tuple[str, int], expected: Version) -> N
     assert initial.update(*args) == expected
 
 
-@pytest.mark.parameterize(
+@pytest.mark.parametrize(
     "initial args expected",
     [
         [Version(0), ["major"], Version(1)],
