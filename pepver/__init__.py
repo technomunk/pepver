@@ -87,7 +87,7 @@ class Version:
         """Get the public part of this version's"""
         # Using a .join method is one of the faster and more memory
         # efficient ways of building strings and we utilize it to full effect.
-        result = []
+        result: List[Any] = []
         if self.epoch is not None:
             result.append(self.epoch)
             result.append("!")
@@ -293,52 +293,52 @@ class Version:
         return not self._less(other, if_equal=False)  # note that if equal is inverted
 
 
-def _int_or_none(s: Optional[str]) -> Optional[int]:
+def _int_or_none(string: Optional[str]) -> Optional[int]:
     """Map strings to integers and falsy strings to Nones"""
-    if not s:
+    if not string:
         return None
-    return int(re.sub(r"[^0-9]", "", s) or 0)
+    return int(re.sub(r"[^0-9]", "", string) or 0)
 
 
-def _parse_release(s: str) -> Tuple[int, ...]:
-    parts = s.split(".")
+def _parse_release(string: str) -> Tuple[int, ...]:
+    parts = string.split(".")
     return tuple(int(part) for part in parts)
 
 
-def _parse_pre(s: Optional[str]) -> Optional[Pre]:
-    if not s:
+def _parse_pre(string: Optional[str]) -> Optional[Pre]:
+    if not string:
         return None
     prefix: Literal["a", "b", "rc"]
-    s = s.strip(".-_").lower()
-    if s.startswith(("a", "alpha")):
+    string = string.strip(".-_").lower()
+    if string.startswith(("a", "alpha")):
         prefix = "a"
-    elif s.startswith(("b", "beta")):
+    elif string.startswith(("b", "beta")):
         prefix = "b"
-    elif s.startswith(("rc", "c", "pre", "preview")):
+    elif string.startswith(("rc", "c", "pre", "preview")):
         prefix = "rc"
     else:
-        raise ValueError(f"'{s}' is not a valid pre-release segment")
+        raise ValueError(f"'{string}' is not a valid pre-release segment")
 
-    n = re.sub(r"[^0-9]", "", s)
-    return prefix, int(n or 0)
+    numeric = re.sub(r"[^0-9]", "", string)
+    return prefix, int(numeric or 0)
 
 
-def _parse_post(s: Optional[str]) -> Optional[int]:
-    if not s:
+def _parse_post(string: Optional[str]) -> Optional[int]:
+    if not string:
         return None
-    if s.startswith("-") and s[1:].isnumeric():
-        return int(s[1:])
-    return int(s.strip("._-postrev") or 0)
+    if string.startswith("-") and string[1:].isnumeric():
+        return int(string[1:])
+    return int(string.strip("._-postrev") or 0)
 
 
-def _lt_or_none(a: Optional[Any], b: Optional[Any]) -> Optional[bool]:
+def _lt_or_none(left: Optional[Any], right: Optional[Any]) -> Optional[bool]:
     """None is always considered smaller than something. If the items are equal returns None."""
-    if a is None:
-        if b is None:
+    if left is None:
+        if right is None:
             return None
         return True
-    if b is None:
+    if right is None:
         return False
-    if a == b:
+    if left == right:
         return None
-    return a < b
+    return left < right
