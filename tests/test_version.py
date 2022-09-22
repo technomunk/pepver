@@ -177,7 +177,7 @@ def test_final() -> None:
     assert not Version(1, local=0).is_final()
 
 
-@pytest.mark.paremterize(
+@pytest.mark.parametrize(
     "left right part",
     [
         [Version(0), Version(1), "major"],
