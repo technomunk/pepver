@@ -39,6 +39,7 @@ class VersionPart(Enum):
     MAJOR = "major"
     MINOR = "minor"
     MICRO = "micro"
+    RELEASE = "release"
     PRE = "pre"
     POST = "post"
     DEV = "dev"
@@ -117,11 +118,16 @@ class Version:
         By default increments the given part of the version by 1, clearing any parts that come
         after the updated. If a particular part of the version did not exist before it is assumed 0.
 
-        str(Version.parse("1.2rc3.dev4").update(VersionPart.PRE)) == "1.2rc4"
-        str(Version.parse("1.2").update(VersionPart.MICRO)) == "1.2.1"
-        str(Version.parse("1.2.3").update(VersionPart.MINOR, -1)) == "1.1"
+        "release" part has special meaning of updating the latest existing part of the release.
+
+        str(Version.parse("1.2rc3.dev4").update("pre")) == "1.2rc4"
+        str(Version.parse("1.2").update("micro")) == "1.2.1"
+        str(Version.parse("1.2.3").update("minor", -1)) == "1.1"
+        str(Version.parse("1.2.3.4.5").update("release")) == "1.2.3.4.6"
         """
         version = deepcopy(self)
+        if not isinstance(part, VersionPart):
+            part = VersionPart(part)
 
         clear = False
         for field in VersionPart:
@@ -129,14 +135,17 @@ class Version:
                 if field == VersionPart.PRE:
                     prefix, value = getattr(version, field.value, ("a", 0))
                     value = prefix, value + change
+                elif field == VersionPart.RELEASE:
+                    value = *version.release[:-1], version.release[-1] + change
                 else:
                     value = getattr(version, field.value, 0) + change
                 setattr(version, field.value, value)
                 clear = True
                 continue
 
-            if clear:
+            if field != VersionPart.RELEASE and clear:
                 setattr(version, field.value, None)
+        version.local = None
 
         return version
 

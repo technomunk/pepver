@@ -1,5 +1,7 @@
+from typing import Tuple
+
 import pytest
-from pepver import Version
+from pepver import Version, VersionPart
 
 
 @pytest.mark.parametrize(
@@ -118,3 +120,86 @@ def test_version_order() -> None:
     reverse_versions = sorted(versions, reverse=True)
     for before, after in zip(reverse_versions, reverse_versions[1:]):
         assert before > after
+
+
+@pytest.mark.parameterize(
+    "initial args expected",
+    [
+        [Version(0), ["major"], Version(1)],
+        [Version(0), ["minor"], Version((0, 1))],
+        [Version(0), ["micro"], Version((0, 0, 1))],
+        [Version((0, 1)), ["release"], Version((0, 2))],
+        [Version((0, 1, 2, 3)), ["release"], Version((0, 1, 2, 4))],
+        [Version((1, 2, 3)), ["minor"], Version((1, 3))],
+        [Version((1, 2, 3)), ["micro"], Version((1, 2, 4))],
+        [Version((1, 2, 3)), ["micro", -1], Version((1, 2, 2))],
+        [Version((1, 2, 3)), ["micro", 2], Version((1, 2, 5))],
+        [Version((1, 2, 3)), ["major", 2], Version(3)],
+        [Version((1, 2, 3)), ["pre"], Version((1, 2, 3), pre=("a", 1))],
+        [Version((1, 2, 3)), ["dev"], Version((1, 2, 3), dev=1)],
+        [Version((1, 2, 3)), ["post"], Version((1, 2, 3), post=1)],
+        [Version((1, 2, 3), ("b", 4)), ["pre"], Version((1, 2, 3), ("b", 5))],
+        [Version((1, 2, 3), ("b", 4), 5), ["post"], Version((1, 2, 3), ("b", 4), 6)],
+        [Version((1, 2, 3), ("b", 4), 5, 6), ["post"], Version((1, 2, 3), ("b", 4), 6)],
+        [Version((1, 2, 3), ("b", 4), 5), ["dev"], Version((1, 2, 3), ("b", 4), 5, 1)],
+    ],
+)
+def test_update(initial: Version, args: Tuple[str, int], expected: Version) -> None:
+    assert initial.update(*args) == expected
+
+
+@pytest.mark.parameterize(
+    "initial args expected",
+    [
+        [Version(0), ["major"], Version(1)],
+        [Version(0), [0], Version(1)],
+        [Version(0), ["minor"], Version((0, 1))],
+        [Version(0), [1], Version((0, 1))],
+        [Version(0), ["micro"], Version((0, 0, 1))],
+        [Version(0), [2], Version((0, 0, 1))],
+        [Version((0, 1, 2)), [-1], Version((0, 1, 2, 3))],
+        [Version((0, 1, 2, 3)), [-1], Version((0, 1, 2, 5))],
+        [Version((0, 1, 2, 3, 4)), [3, 11], Version((0, 1, 2, 14))],
+        [Version((0, 1, 2, 3, 4)), [1], Version((0, 2))],
+    ],
+)
+def test_update_release(initial: Version, args: Tuple[int, int], expected: Version) -> None:
+    assert initial.update_release(*args) == expected
+
+
+def test_final() -> None:
+    assert Version(1).is_final()
+    assert Version((1, 2, 3)).is_final()
+    assert Version(epoch=2, release=0).is_final()
+    assert not Version(1, ("rc", 11)).is_final()
+    assert not Version(1, post=0).is_final()
+    assert not Version(1, dev=0).is_final()
+    assert not Version(1, local=0).is_final()
+
+
+@pytest.mark.paremterize(
+    "left right part",
+    [
+        [Version(0), Version(1), "major"],
+        [Version(epoch=1, release=0), Version(1), "epoch"],
+        [Version((0, 1)), Version(0), "minor"],
+        [Version((0, 1, 2)), Version(0), "minor"],
+        [Version((0, 1, 2)), Version((0, 1)), "micro"],
+        [Version((0, 1, 2)), Version((0, 1, 2)), None],
+        [Version((0, 1, 2, 4)), Version((0, 1, 2)), "release"],
+        [Version(0, ("a", 0)), Version(0), "pre"],
+        [Version(0, ("a", 0)), Version(0, ("a", 1)), "pre"],
+        [Version(0, ("a", 0)), Version(0, ("b", 0)), "pre"],
+        [Version(0, ("a", 0)), Version(0, ("rc", 0)), "pre"],
+        [Version(0, ("b", 0)), Version(0, ("rc", 0)), "pre"],
+        [Version(0, ("a", 0), 1), Version(0, ("a", 0)), "post"],
+        [Version(0, ("a", 0), 1, 1), Version(0, ("a", 0)), "post"],
+        [Version(0, ("a", 0), 0, 0), Version(0, ("a", 0), 0), "dev"],
+        [Version(0, ("a", 0), 0, 0, local="1"), Version(0, ("a", 0), 0), "local"],
+        [Version(0, ("a", 0), 0, 0, local="1"), Version(0, ("a", 0), 0, 0, local="1"), None],
+    ]
+)
+def test_different_at(left: Version, right: Version, part: VersionPart) -> None:
+    if part is not None and not isinstance(part, VersionPart):
+        part = VersionPart(part)
+    assert left.different_at(right) == part
