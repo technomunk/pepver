@@ -3,7 +3,7 @@ PEP-440 version parsing, interpretation and manipulation.
 
 https://peps.python.org/pep-0440
 """
-__version__ = "1.0.0rc2"
+__version__ = "1.0.0"
 
 import re
 from copy import deepcopy
