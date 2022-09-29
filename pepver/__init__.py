@@ -260,6 +260,9 @@ class Version:
 
         return f'Value({", ".join(args)})'
 
+    def __hash__(self) -> int:
+        return hash(tuple(getattr(self, field) for field in self.FIELDS))
+
     def _less(self, other: "Version", *, if_equal: bool) -> bool:
         for field in self.FIELDS:
             diff = _lt_or_none(getattr(self, field), getattr(other, field))
