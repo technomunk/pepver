@@ -111,7 +111,7 @@ class Version:
         """Drop the non-final segments of this version."""
         return type(self)(epoch=self.epoch, release=self.release)
 
-    def update(self, part: VersionPart, change: int = 1) -> "Version":
+    def update(self, part: Union[VersionPart, str], change: int = 1) -> "Version":
         """
         Update a particular part of this version and get the result.
 
