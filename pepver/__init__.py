@@ -174,6 +174,24 @@ class Version:
             release = *self.release[:idx], self.release[idx] + change
         return type(self)(epoch=self.epoch, release=release)
 
+    def truncate_release(self, keep: int = 0) -> "Version":
+        """
+        Remove trailing zeroes from the release part of the version.
+
+        str(Version.parse("1.0.0.0").truncate()) == "1"
+        str(Version.parse("1.0.0.0").truncate(3)) == "1.0.0"
+        str(Version.parse("1.0.0.1").truncate(3)) == "1.0.0.1"
+        """
+        if keep < 0:
+            raise ValueError("kept number of digits must be non-negative")
+        if keep == 0:
+            keep = 1
+
+        version = deepcopy(self)
+        version.release = _truncate(version.release, keep)
+        return version
+
+
     @property
     def major(self) -> int:
         """Major (first) segment of the release part."""
@@ -354,3 +372,13 @@ def _lt_or_none(left: Optional[Any], right: Optional[Any]) -> Optional[bool]:
     if left == right:
         return None
     return left < right
+
+
+def _truncate(value: Tuple[int, ...], keep: int) -> Tuple[int, ...]:
+    if len(value) <= keep:
+        return value
+    last_non_zero = keep
+    for i, val in enumerate(value[keep:], start=keep+1):
+        if val:
+            last_non_zero = i
+    return tuple(value[:last_non_zero])

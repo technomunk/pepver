@@ -167,6 +167,19 @@ def test_update_release(initial: Version, args: Tuple[int, int], expected: Versi
     assert initial.update_release(*args) == expected
 
 
+@pytest.mark.parametrize(
+    ["initial", "keep", "expected"],
+    [
+        [Version((0, 0, 0, 1)), 0, Version((0, 0, 0, 1))],
+        [Version((0, 0, 0, 0)), 0, Version((0))],
+        [Version((0, 0, 0, 0)), 2, Version((0, 0))],
+        [Version((1, 0, 0, 0)), 2, Version((1, 0))],
+    ]
+)
+def test_truncate(initial: Version, keep: int, expected: Version) -> None:
+    assert initial.truncate_release(keep) == expected
+
+
 def test_final() -> None:
     assert Version(1).is_final()
     assert Version((1, 2, 3)).is_final()
