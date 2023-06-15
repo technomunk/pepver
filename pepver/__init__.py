@@ -178,9 +178,9 @@ class Version:
         """
         Remove trailing zeroes from the release part of the version.
 
-        str(Version.parse("1.0.0.0").truncate()) == "1"
-        str(Version.parse("1.0.0.0").truncate(3)) == "1.0.0"
-        str(Version.parse("1.0.0.1").truncate(3)) == "1.0.0.1"
+        str(Version.parse("1.0.0.0").truncate_release()) == "1"
+        str(Version.parse("1.0.0.0").truncate_release(3)) == "1.0.0"
+        str(Version.parse("1.0.0.1").truncate_release(3)) == "1.0.0.1"
         """
         if keep < 0:
             raise ValueError("kept number of digits must be non-negative")
