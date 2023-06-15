@@ -191,7 +191,6 @@ class Version:
         version.release = _truncate(version.release, keep)
         return version
 
-
     @property
     def major(self) -> int:
         """Major (first) segment of the release part."""
@@ -378,7 +377,7 @@ def _truncate(value: Tuple[int, ...], keep: int) -> Tuple[int, ...]:
     if len(value) <= keep:
         return value
     last_non_zero = keep
-    for i, val in enumerate(value[keep:], start=keep+1):
+    for i, val in enumerate(value[keep:], start=keep + 1):
         if val:
             last_non_zero = i
     return tuple(value[:last_non_zero])
