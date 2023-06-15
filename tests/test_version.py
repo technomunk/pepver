@@ -1,6 +1,7 @@
 from typing import Tuple
 
 import pytest
+
 from pepver import Version, VersionPart
 
 
@@ -174,9 +175,22 @@ def test_update_release(initial: Version, args: Tuple[int, int], expected: Versi
         [Version((0, 0, 0, 0)), 0, Version((0))],
         [Version((0, 0, 0, 0)), 2, Version((0, 0))],
         [Version((1, 0, 0, 0)), 2, Version((1, 0))],
-    ]
+    ],
 )
-def test_truncate(initial: Version, keep: int, expected: Version) -> None:
+def test_strip_release(initial: Version, keep: int, expected: Version) -> None:
+    assert initial.strip_release(keep) == expected
+
+
+@pytest.mark.parametrize(
+    ["initial", "keep", "expected"],
+    [
+        [Version((0, 0, 0, 1)), 1, Version((0))],
+        [Version((0, 0, 0, 0)), 2, Version((0, 0))],
+        [Version((1, 0, 0, 0)), 2, Version((1, 0))],
+        [Version((1, 0, 1)), 2, Version((1, 0))],
+    ],
+)
+def test_truncate_release(initial: Version, keep: int, expected: Version) -> None:
     assert initial.truncate_release(keep) == expected
 
 

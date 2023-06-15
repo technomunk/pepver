@@ -174,7 +174,7 @@ class Version:
             release = *self.release[:idx], self.release[idx] + change
         return type(self)(epoch=self.epoch, release=release)
 
-    def truncate_release(self, keep: int = 0) -> "Version":
+    def strip_release(self, keep: int = 0) -> "Version":
         """
         Remove trailing zeroes from the release part of the version.
 
@@ -188,7 +188,14 @@ class Version:
             keep = 1
 
         version = deepcopy(self)
-        version.release = _truncate(version.release, keep)
+        version.release = _strip_tuple(version.release, keep)
+        return version
+
+    def truncate_release(self, keep: int) -> "Version":
+        if keep < 1:
+            raise ValueError("must keep at least 1 release digit")
+        version = deepcopy(self)
+        version.release = tuple(self.release[:keep])
         return version
 
     @property
@@ -373,7 +380,7 @@ def _lt_or_none(left: Optional[Any], right: Optional[Any]) -> Optional[bool]:
     return left < right
 
 
-def _truncate(value: Tuple[int, ...], keep: int) -> Tuple[int, ...]:
+def _strip_tuple(value: Tuple[int, ...], keep: int) -> Tuple[int, ...]:
     if len(value) <= keep:
         return value
     last_non_zero = keep
